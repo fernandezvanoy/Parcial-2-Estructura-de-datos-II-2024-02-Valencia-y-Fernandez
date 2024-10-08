@@ -1,21 +1,24 @@
 #ifndef NODO_H
 #define NODO_H
 
+#include <string>
 #include <vector>
+
 using namespace std;
 
 class Nodo {
 private:
-    int id;                          
-    vector<Nodo*> adyacentes;    
-    vector<int> distancias;      
-
+    vector<Nodo*> adyacentes;   // Lista de punteros a nodos adyacentes
+    vector<int> distancias;     // Lista de distancias
 public:
+    int id;
+    string nombre;
+
     // Constructor
     Nodo(int id);
 
     // Getter para adyacentes
-    vector<Nodo*>& getAdyacentes();
+    vector<Nodo*> getAdyacentes();
 
     // Setter para adyacentes
     void setAdyacentes(const vector<Nodo*>& adyacentes);
@@ -26,11 +29,13 @@ public:
     // Setter para distancias
     void setDistancias(const vector<int>& dist);
 
-    // Setter para ID
+    // Getter y Setter para id
     void setID(int id);
-
-    // Getter para ID
     int getID() const;
+
+    bool operator==(const Nodo& otro) const;
+        
+    
 };
 
-#endif 
+#endif
