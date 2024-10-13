@@ -8,11 +8,11 @@ using namespace std;
 
 class Nodo {
 private:
-    vector<Nodo*> adyacentes;   // Lista de punteros a nodos adyacentes
     vector<int> distancias;     // Lista de distancias
 public:
     int id;
     string nombre;
+    vector<Nodo*> adyacentes;   // Lista de punteros a nodos adyacentes
 
     // Constructor
     Nodo(int id);

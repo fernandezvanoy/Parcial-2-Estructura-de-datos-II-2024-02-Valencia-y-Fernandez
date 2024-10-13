@@ -10,9 +10,6 @@ public:
     {
         Parcial parcial;
 
-        int opt;
-        cin >> opt;
-
         int numPuntos = 14;
 
         double **puntos = new double *[15]; // Crear un array de 15 punteros a double

@@ -11,19 +11,30 @@ void Parcial::cargar()
         grafo.mapa.push_back(new Nodo(i));
     }
 
-    // Conectar nodos todos con todos
+    
+    /*
+    
+     // Conectar nodos 
     for (int i = 0; i < n; i++)
     {
         Nodo &nodoActual = *(this->grafo.mapa[i]);
+
+        //lista de nodos
 
         for (int j = 0; j < n; j++)
         {
             if (i != j)
             {
-                nodoActual.getAdyacentes().push_back(grafo.mapa[j]);
+                nodoActual.adyacentes.push_back(grafo.mapa[j]);
+
             }
         }
-    }
+
+        //nodoActual.setAdyacentes = lista;
+    }  
+
+    */
+    
 }
 
 void Parcial::run(double **puntos, int numPuntos)
@@ -52,6 +63,11 @@ void Parcial::run(double **puntos, int numPuntos)
     std::vector<Nodo *> subgrafo1 = generarSubgrafo(indiceSubgrafos[0], grafo.mapa);
     std::vector<Nodo *> subgrafo2 = generarSubgrafo(indiceSubgrafos[1], grafo.mapa);
 
+
+    
+
+    /*
+    
     for (auto &nodo1 : subgrafo1)
     {
         for (auto &nodo2 : subgrafo2)
@@ -67,7 +83,41 @@ void Parcial::run(double **puntos, int numPuntos)
             nodo2->getAdyacentes().erase(std::remove(nodo2->getAdyacentes().begin(), nodo2->getAdyacentes().end(), nodo1), nodo2->getAdyacentes().end());
         }
     }
+    */
 
+   //NUEVO
+
+  
+    // Conectar nodos 
+    for (int i = 0; i < subgrafo1.size(); i++)
+    {
+        Nodo &nodoActual = *(subgrafo1[i]);
+
+        for (int j = 0; j < subgrafo1.size(); j++)
+        {
+            if (i != j)
+            {
+                nodoActual.adyacentes.push_back(subgrafo1[j]);
+            }
+        }
+    }
+
+    for (int i = 0; i < subgrafo2.size(); i++)
+    {
+        Nodo &nodoActual = *(subgrafo2[i]);
+
+        for (int j = 0; j < subgrafo2.size(); j++)
+        {
+            if (i != j)
+            {
+                nodoActual.adyacentes.push_back(subgrafo2[j]);
+            }
+        }
+    }
+
+
+    /*
+    
     for (int i = 0; i < numPuntos; i++)
     {
         for (int j = 0; j < numPuntos; j++)
@@ -76,25 +126,86 @@ void Parcial::run(double **puntos, int numPuntos)
         }
         std::cout << std::endl;
     }
+    
+    */
 
     Nodo *nodoInicioA = grafo.mapa[14];
     Nodo *nodoInicioB = grafo.mapa[7];
 
-    int nSubA = subgrafo1.size();
-    int nSubB = subgrafo2.size();
+    int nSubA;
+    int nSubB;
+
+    if (std::find(subgrafo1.begin(), subgrafo1.end(), nodoInicioA) != subgrafo1.end()) {
+    nSubA = 8;
+    nSubB = subgrafo2.size();
+    } else {
+    nSubA = subgrafo2.size();
+    nSubB = 8;
+    }
+
 
     std::vector<std::vector<Nodo *>> rutasA = BuscarRutas(nodoInicioA, nSubA);
     std::vector<std::vector<Nodo *>> rutasB = BuscarRutas(nodoInicioB, nSubB);
 
-    double costoRutaA = 9999;
-    double costoRutaB = 9999;
+    double costoRutaA = 0;
+    double costoRutaB = 0;
 
-    for(vector<Nodo*> &ruta: rutasA){
-        calcularCosto(ruta, distancias);
-    }
+    cout << rutasA.size() << endl;
+    cout << rutasB.size() << endl;
 
     vector<Nodo*> menorRutaA;
     vector<Nodo*> menorRutaB;
+
+    for(vector<Nodo*> &ruta: rutasA){
+
+        double costo = calcularCosto(ruta, distancias);
+
+      if(costoRutaA == 0){
+
+        costoRutaA = costo;
+        menorRutaA = ruta;
+
+        continue;
+      }
+
+      if(costo < costoRutaA){
+        costoRutaA = costo;
+        menorRutaA = ruta;
+      }
+    }
+
+    for(vector<Nodo*> &ruta: rutasB){
+
+        double costo = calcularCosto(ruta, distancias);
+
+      if(costoRutaB == 0){
+
+        costoRutaB = costo;
+        menorRutaB = ruta;
+
+        continue;
+      }
+
+      if(costo < costoRutaB){
+        costoRutaB = costo;
+        menorRutaB = ruta;
+      }
+    }
+
+
+    for(Nodo* nodo : menorRutaA){
+
+        cout << nodo->nombre << " -> " << endl;
+    }
+
+    cout << "costo ruta a: "<<costoRutaA/1000 << " Km" << endl;
+
+    for(Nodo* nodo : menorRutaB){
+
+        cout << nodo->nombre << " -> " << endl;
+    }
+
+    cout << "costo ruta b :" << costoRutaB/1000 << " Km" << endl;
 
     grafo.puntos = puntos;
     grafo.distancias = distancias;
@@ -173,8 +284,10 @@ double Parcial::calcularCosto(std::vector<Nodo*> &ruta, double** distancias)
     return costo;
 }
 
-double **Parcial::calcularDistancias(double **puntos, int numPuntos)
-{
+double **Parcial::calcularDistancias(double **puntos, int numPuntos){
+
+    numPuntos += 1;
+
     double **distancias = new double *[numPuntos];
     for (int i = 0; i < numPuntos; i++)
     {
@@ -227,14 +340,14 @@ vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
     std::vector<std::vector<int>> subgraph;
 
     // Inicializamos dos conjuntos a y b
-    std::vector<int> a, b;
-
+    std::vector<int> a;
+    std::vector<int> b;
     // Dividir nodos por igual entre los conjuntos
-    for (int i = 0; i < 7; i++)
+    for (int i = 0; i < 8; i++)
     {
         a.push_back(i);
     }
-    for (int i = 0; i < 8; i++)
+    for (int i = 8; i < 15; i++)
     {
         b.push_back(i);
     }
@@ -249,7 +362,7 @@ vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
         double distanciaA = calcularDistanciaTotal(graph, a);
         double distanciaB = calcularDistanciaTotal(graph, b);
         double mejorMejora = 0;
-        int mejorA = -1, mejorB = -1;
+        int mejorA = -1, mejorB = -1;   
 
         // Probar todos los pares de nodos para intercambio
         for (int nodoA : a)
