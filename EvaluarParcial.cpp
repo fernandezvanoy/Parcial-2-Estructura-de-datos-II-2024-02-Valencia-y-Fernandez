@@ -1,7 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "Parcial.h"
-using namespace std;
+#include <chrono>
+
 
 class EvaluarParcial
 {
@@ -25,7 +26,7 @@ public:
         puntos[8] = new double[2]{6.24032, -75.57561};
         puntos[9] = new double[2]{6.27394, -75.55203};
         puntos[10] = new double[2]{6.25817, -75.56128};
-        puntos[11] = new double[2]{6.23019, -75.57845};
+        puntos[11] = new double[2]{6.23019, -75.57845};         
         puntos[12] = new double[2]{6.21854, -75.59320};
         puntos[13] = new double[2]{6.16256, -75.60183};
         puntos[14] = new double[2]{6.14589, -75.61027};
@@ -52,9 +53,12 @@ public:
          */
 
         parcial.cargar();
-        parcial.run(puntos, numPuntos);
 
-        cout << "fin" << endl;
+        auto inicio = chrono::high_resolution_clock::now();
+        parcial.run(puntos, numPuntos);
+        auto fin = chrono::high_resolution_clock::now();
+        auto duracion = chrono::duration_cast<chrono::microseconds>(fin - inicio);
+        cout << "\nTiempo de ejecución del método run(): " << duracion.count() << " microsegundos" << endl;
     }
 };
 

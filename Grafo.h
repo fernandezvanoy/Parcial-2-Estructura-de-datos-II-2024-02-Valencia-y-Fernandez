@@ -10,16 +10,14 @@
 using namespace std;
 
 
-
+//Clae Grafo con los atributos que consideramos necesarios
 class Grafo {
-private:
-
-
-
 public:
     vector<Nodo*> mapa;
     double** puntos;
     double** distancias;
+
+    
 };
 
 #endif

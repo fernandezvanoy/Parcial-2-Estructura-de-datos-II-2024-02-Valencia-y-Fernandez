@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 
+//Funcion para insertar nodos en el grafo
 void Parcial::cargar()
 {
     int n = 15;
@@ -11,32 +12,10 @@ void Parcial::cargar()
         grafo.mapa.push_back(new Nodo(i));
     }
 
-    
-    /*
-    
-     // Conectar nodos 
-    for (int i = 0; i < n; i++)
-    {
-        Nodo &nodoActual = *(this->grafo.mapa[i]);
 
-        //lista de nodos
-
-        for (int j = 0; j < n; j++)
-        {
-            if (i != j)
-            {
-                nodoActual.adyacentes.push_back(grafo.mapa[j]);
-
-            }
-        }
-
-        //nodoActual.setAdyacentes = lista;
-    }  
-
-    */
-    
 }
 
+//Funcion que ejecuta la mayoria de procesos del programa
 void Parcial::run(double **puntos, int numPuntos)
 {
     double **distancias = calcularDistancias(puntos, numPuntos);
@@ -59,36 +38,14 @@ void Parcial::run(double **puntos, int numPuntos)
     this->grafo.mapa[13]->nombre = "Itagüí";
     this->grafo.mapa[14]->nombre = "Sabaneta";
 
-    auto indiceSubgrafos = kernighanLinParticion(distancias, n);
-    std::vector<Nodo *> subgrafo1 = generarSubgrafo(indiceSubgrafos[0], grafo.mapa);
-    std::vector<Nodo *> subgrafo2 = generarSubgrafo(indiceSubgrafos[1], grafo.mapa);
+    //Procesos para dividir el grafo en 2 subgrafos
+    vector<vector<int>> indiceSubgrafos = kernighanLinParticion(distancias, n);
+    vector<Nodo *> subgrafo1 = generarSubgrafo(indiceSubgrafos[0], grafo.mapa);
+    vector<Nodo *> subgrafo2 = generarSubgrafo(indiceSubgrafos[1], grafo.mapa);
 
-
-    
-
-    /*
-    
-    for (auto &nodo1 : subgrafo1)
-    {
-        for (auto &nodo2 : subgrafo2)
-        {
-            nodo1->getAdyacentes().erase(std::remove(nodo1->getAdyacentes().begin(), nodo1->getAdyacentes().end(), nodo2), nodo1->getAdyacentes().end());
-        }
-    }
-
-    for (auto &nodo2 : subgrafo2)
-    {
-        for (auto &nodo1 : subgrafo1)
-        {
-            nodo2->getAdyacentes().erase(std::remove(nodo2->getAdyacentes().begin(), nodo2->getAdyacentes().end(), nodo1), nodo2->getAdyacentes().end());
-        }
-    }
-    */
-
-   //NUEVO
 
   
-    // Conectar nodos 
+    // Conectar nodos para subgrafo1
     for (int i = 0; i < subgrafo1.size(); i++)
     {
         Nodo &nodoActual = *(subgrafo1[i]);
@@ -102,6 +59,7 @@ void Parcial::run(double **puntos, int numPuntos)
         }
     }
 
+    // Conectar nodos para subgrafo2
     for (int i = 0; i < subgrafo2.size(); i++)
     {
         Nodo &nodoActual = *(subgrafo2[i]);
@@ -115,27 +73,13 @@ void Parcial::run(double **puntos, int numPuntos)
         }
     }
 
-
-    /*
-    
-    for (int i = 0; i < numPuntos; i++)
-    {
-        for (int j = 0; j < numPuntos; j++)
-        {
-            std::cout << distancias[i][j] << " ";
-        }
-        std::cout << std::endl;
-    }
-    
-    */
-
     Nodo *nodoInicioA = grafo.mapa[14];
     Nodo *nodoInicioB = grafo.mapa[7];
 
     int nSubA;
     int nSubB;
 
-    if (std::find(subgrafo1.begin(), subgrafo1.end(), nodoInicioA) != subgrafo1.end()) {
+    if (find(subgrafo1.begin(), subgrafo1.end(), nodoInicioA) != subgrafo1.end()) {
     nSubA = 8;
     nSubB = subgrafo2.size();
     } else {
@@ -143,19 +87,20 @@ void Parcial::run(double **puntos, int numPuntos)
     nSubB = 8;
     }
 
+    //Busqueda de las rutas posibles en cada subgrafo
+    vector<vector<Nodo *>> rutasA = BuscarRutas(nodoInicioA, nSubA);
+    vector<vector<Nodo *>> rutasB = BuscarRutas(nodoInicioB, nSubB);
 
-    std::vector<std::vector<Nodo *>> rutasA = BuscarRutas(nodoInicioA, nSubA);
-    std::vector<std::vector<Nodo *>> rutasB = BuscarRutas(nodoInicioB, nSubB);
-
-    double costoRutaA = 0;
-    double costoRutaB = 0;
-
-    cout << rutasA.size() << endl;
-    cout << rutasB.size() << endl;
+    cout << "Cantidad de rutas para el subgrafo1: " << rutasA.size() << endl;
+    cout << "Cantidad de rutas para el subgrafo2: " << rutasB.size() << endl;
 
     vector<Nodo*> menorRutaA;
     vector<Nodo*> menorRutaB;
 
+    double costoRutaA = 0;
+    double costoRutaB = 0;
+
+    //Proceso para encontrar la ruta con menor costo del subgrafo1
     for(vector<Nodo*> &ruta: rutasA){
 
         double costo = calcularCosto(ruta, distancias);
@@ -174,6 +119,7 @@ void Parcial::run(double **puntos, int numPuntos)
       }
     }
 
+    //Proceso para encontrar la ruta con menor costo del subgrafo2
     for(vector<Nodo*> &ruta: rutasB){
 
         double costo = calcularCosto(ruta, distancias);
@@ -192,30 +138,33 @@ void Parcial::run(double **puntos, int numPuntos)
       }
     }
 
-
+    //Print de los resultados
+    cout << "\nRuta camion A:";
     for(Nodo* nodo : menorRutaA){
 
-        cout << nodo->nombre << " -> " << endl;
+        cout << " -> " << nodo->nombre;
     }
 
-    cout << "costo ruta a: "<<costoRutaA/1000 << " Km" << endl;
+    cout << "\nCosto ruta A: "<<costoRutaA/1000 << " Km" << endl;
 
+    cout << "\nRuta camion B:";
     for(Nodo* nodo : menorRutaB){
 
-        cout << nodo->nombre << " -> " << endl;
+        cout << " -> " << nodo->nombre;
     }
 
-    cout << "costo ruta b :" << costoRutaB/1000 << " Km" << endl;
+    cout << "\nCosto ruta B :" << costoRutaB/1000 << " Km" << endl;
 
     grafo.puntos = puntos;
     grafo.distancias = distancias;
 }
 
-std::vector<Nodo *> Parcial::generarSubgrafo(const std::vector<int> &subgrafo, const std::vector<Nodo *> &mapa)
+//Funcion para crear un subgrafo segun los indices de los nodos en la variable mapa
+vector<Nodo *> Parcial::generarSubgrafo(const vector<int> &subgrafo, const vector<Nodo *> &mapa)
 {
-    std::vector<Nodo *> conexiones;
+    vector<Nodo *> conexiones;
 
-    for (const auto &n : subgrafo)
+    for (const int &n : subgrafo)
     {
         conexiones.push_back(mapa[n]);
     }
@@ -223,15 +172,16 @@ std::vector<Nodo *> Parcial::generarSubgrafo(const std::vector<int> &subgrafo, c
     return conexiones;
 }
 
-std::vector<std::vector<Nodo *>> Parcial::BuscarRutas(Nodo *inicio, int longitud)
+//Busca todas las rutas desde un nodo inicial hasta una longitud dada
+vector<vector<Nodo *>> Parcial::BuscarRutas(Nodo *inicio, int longitud)
 {
-    std::vector<std::vector<Nodo *>> rutas;
-    std::vector<Nodo *> ruta;
+    vector<vector<Nodo *>> rutas;
+    vector<Nodo *> ruta;
     ruta.push_back(inicio);
 
-    for (auto &vecino : inicio->getAdyacentes())
+    for (Nodo *&vecino : inicio->adyacentes)
     {
-        std::vector<Nodo *> nuevaRuta = ruta;
+        vector<Nodo *> nuevaRuta = ruta;
         nuevaRuta.push_back(vecino);
         BuscarRuta(vecino, nuevaRuta, rutas, longitud);
     }
@@ -239,6 +189,7 @@ std::vector<std::vector<Nodo *>> Parcial::BuscarRutas(Nodo *inicio, int longitud
     return rutas;
 }
 
+//Explora recursivamente rutas desde un nodo hasta alcanzar la longitud especificada, evitando ciclos
 void Parcial::BuscarRuta(Nodo *nodo, vector<Nodo *> rutaActual, vector<vector<Nodo *>> &rutas, int longitud)
 {
     if (longitud == rutaActual.size())
@@ -248,13 +199,13 @@ void Parcial::BuscarRuta(Nodo *nodo, vector<Nodo *> rutaActual, vector<vector<No
     }
     else
     {
-        for (auto &vecino : nodo->getAdyacentes())
+        for (Nodo *&vecino : nodo->adyacentes)
         {
             vector<Nodo *> nuevaRuta = rutaActual;
 
             // Búsqueda manual para ver si el vecino ya está en nuevaRuta
             bool yaEstaEnRuta = false;
-            for (auto &nodoEnRuta : nuevaRuta)
+            for (Nodo *&nodoEnRuta : nuevaRuta)
             {
                 if (nodoEnRuta == vecino)
                 {
@@ -272,11 +223,12 @@ void Parcial::BuscarRuta(Nodo *nodo, vector<Nodo *> rutaActual, vector<vector<No
     }
 }
 
-double Parcial::calcularCosto(std::vector<Nodo*> &ruta, double** distancias)
+//Calcula el costo de una ruta
+double Parcial::calcularCosto(vector<Nodo*> &ruta, double** distancias)
 {
     double costo = 0.0;
 
-    for (size_t i = 0; i < ruta.size() - 1; i++)
+    for (int i = 0; i < ruta.size() - 1; i++)
     {
         costo += distancias[ruta[i]->getID()][ruta[i + 1]->getID()];
     }
@@ -284,6 +236,7 @@ double Parcial::calcularCosto(std::vector<Nodo*> &ruta, double** distancias)
     return costo;
 }
 
+//Funcion que calcula las distancias entre cada uno de los nodos del grafo
 double **Parcial::calcularDistancias(double **puntos, int numPuntos){
 
     numPuntos += 1;
@@ -310,6 +263,7 @@ double **Parcial::calcularDistancias(double **puntos, int numPuntos){
     return distancias;
 }
 
+//Calcula la distancia en metros teniendo en cuenta la latitud y longitud de dos puntos
 double Parcial::calcularGradosMetros(double lat1, double lon1, double lat2, double lon2)
 {
     const int RADIO_TIERRA = 6371;
@@ -330,18 +284,14 @@ double Parcial::calcularGradosMetros(double lat1, double lon1, double lat2, doub
     return distanciaMetros;
 }
 
-double Parcial::calcularDistanciaEuclidiana(double x1, double y1, double x2, double y2)
-{
-    return sqrt(pow(x2 - x1, 2) + pow(y2 - y1, 2));
-}
-
+//Divide el grafo en dos subconjuntos de nodos de tamaño aproximadamente igual
 vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
 {
-    std::vector<std::vector<int>> subgraph;
+    vector<vector<int>> subgraph;
 
     // Inicializamos dos conjuntos a y b
-    std::vector<int> a;
-    std::vector<int> b;
+    vector<int> a;
+    vector<int> b;
     // Dividir nodos por igual entre los conjuntos
     for (int i = 0; i < 8; i++)
     {
@@ -370,10 +320,10 @@ vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
             for (int nodoB : b)
             {
                 // Intercambiar nodos y calcular la nueva distancia total
-                std::vector<int> nuevoA = a;
-                std::vector<int> nuevoB = b;
-                nuevoA.erase(std::remove(nuevoA.begin(), nuevoA.end(), nodoA), nuevoA.end());
-                nuevoB.erase(std::remove(nuevoB.begin(), nuevoB.end(), nodoB), nuevoB.end());
+                vector<int> nuevoA = a;
+                vector<int> nuevoB = b;
+                nuevoA.erase(remove(nuevoA.begin(), nuevoA.end(), nodoA), nuevoA.end());
+                nuevoB.erase(remove(nuevoB.begin(), nuevoB.end(), nodoB), nuevoB.end());
                 nuevoA.push_back(nodoB);
                 nuevoB.push_back(nodoA);
 
@@ -395,8 +345,8 @@ vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
         // Si encontramos una mejora, realizar el intercambio
         if (mejorMejora > 0)
         {
-            a.erase(std::remove(a.begin(), a.end(), mejorA), a.end());
-            b.erase(std::remove(b.begin(), b.end(), mejorB), b.end());
+            a.erase(remove(a.begin(), a.end(), mejorA), a.end());
+            b.erase(remove(b.begin(), b.end(), mejorB), b.end());
             a.push_back(mejorB);
             b.push_back(mejorA);
             mejora = true;
@@ -409,14 +359,15 @@ vector<vector<int>> Parcial::kernighanLinParticion(double **graph, int numnodos)
     return subgraph;
 }
 
-double Parcial::calcularDistanciaTotal(double **graph, const std::vector<int> &grupo)
+
+double Parcial::calcularDistanciaTotal(double **graph, const vector<int> &grupo)
 {
     double total = 0.0;
 
 
-    for (size_t i = 0; i < grupo.size(); i++)
+    for (int i = 0; i < grupo.size(); i++)
     {
-        for (size_t j = i + 1; j < grupo.size(); j++)
+        for (int j = i + 1; j < grupo.size(); j++)
         {
             total += graph[grupo[i]][grupo[j]];
         }

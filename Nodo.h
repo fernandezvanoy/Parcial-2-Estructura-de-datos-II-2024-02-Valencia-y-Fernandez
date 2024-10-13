@@ -6,6 +6,7 @@
 
 using namespace std;
 
+//Clase Nodo
 class Nodo {
 private:
     vector<int> distancias;     // Lista de distancias
@@ -17,12 +18,6 @@ public:
     // Constructor
     Nodo(int id);
 
-    // Getter para adyacentes
-    vector<Nodo*> getAdyacentes();
-
-    // Setter para adyacentes
-    void setAdyacentes(const vector<Nodo*>& adyacentes);
-
     // Getter para distancias
     vector<int>& getDistancias();
 
@@ -32,9 +27,6 @@ public:
     // Getter y Setter para id
     void setID(int id);
     int getID() const;
-
-    bool operator==(const Nodo& otro) const;
-        
     
 };
 
