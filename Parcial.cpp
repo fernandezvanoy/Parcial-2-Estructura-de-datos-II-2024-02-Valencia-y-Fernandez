@@ -91,8 +91,8 @@ void Parcial::run(double **puntos, int numPuntos)
     vector<vector<Nodo *>> rutasA = BuscarRutas(nodoInicioA, nSubA);
     vector<vector<Nodo *>> rutasB = BuscarRutas(nodoInicioB, nSubB);
 
-    cout << "Cantidad de rutas para el subgrafo1: " << rutasA.size() << endl;
-    cout << "Cantidad de rutas para el subgrafo2: " << rutasB.size() << endl;
+    //cout << "Cantidad de rutas para el subgrafo1: " << rutasA.size() << endl;
+    //cout << "Cantidad de rutas para el subgrafo2: " << rutasB.size() << endl;
 
     vector<Nodo*> menorRutaA;
     vector<Nodo*> menorRutaB;
@@ -155,8 +155,6 @@ void Parcial::run(double **puntos, int numPuntos)
 
     cout << "\nCosto ruta B :" << costoRutaB/1000 << " Km" << endl;
 
-    grafo.puntos = puntos;
-    grafo.distancias = distancias;
 }
 
 //Funcion para crear un subgrafo segun los indices de los nodos en la variable mapa
@@ -255,7 +253,7 @@ double **Parcial::calcularDistancias(double **puntos, int numPuntos){
         for (int j = 0; j < numPuntos; j++)
         {
             double latitud2 = puntos[j][0];
-            double longitud2 = puntos[j][1];
+            double longitud2 = puntos[j][1];    
             distancias[i][j] = calcularGradosMetros(latitud1, longitud1, latitud2, longitud2);
         }
     }
